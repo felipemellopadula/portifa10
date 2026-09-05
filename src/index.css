@@ -1,0 +1,2308 @@
+:root {
+  --blue: #8fc3dc;
+  --pink: #ed2e63;
+  --paper: #f1f0ec;
+  --night: #0b0b0c;
+
+  /* Serifada de display, serifada de leitura e a mono dos rotulos. A pagina
+     interna e feita da conversa entre as tres. */
+  --display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --serif: 'Newsreader', Georgia, serif;
+  --mono: 'Roboto Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  --rule: rgba(241, 240, 236, 0.22);
+  --muted: rgba(241, 240, 236, 0.5);
+
+  /* Altura da faixa fechada. O alvo do mouse e ancorado nestes mesmos valores. */
+  --strip: 70vh;
+  --hit-top: 8vh;
+  --hit-height: 54vh;
+  /* Do centro do alvo ate o centro da faixa aberta. */
+  --center-shift: calc(50vh - (var(--hit-top) + var(--hit-height) / 2));
+
+  color-scheme: dark;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--night);
+  color: var(--paper);
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  overflow-x: hidden;
+}
+
+img,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+/* Titulo com quebra desenhada: cada linha vira um bloco proprio. Sem isso os
+   pedacos voltariam a correr um atras do outro na mesma linha. */
+.band-title span,
+.next-title span {
+  display: block;
+}
+
+/* Rotulo curto em mono: e o que separa o texto de ficha do texto de leitura. */
+.mono-label {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Entrada por IntersectionObserver: o elemento nasce marcado e o observer so
+   tira a marca. Quem anima e a transicao do CSS. */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(1.4rem);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------------------------------------------------------------- assinatura */
+
+.wm-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.wordmark {
+  display: block;
+  font-family: 'Big Shoulders Display', 'Arial Narrow', 'Helvetica Neue', sans-serif;
+  font-size: clamp(2.4rem, 6.4vw, 6.4rem);
+  font-weight: 900;
+  line-height: 0.74;
+  letter-spacing: -0.005em;
+  color: var(--blue);
+  text-decoration: none;
+  white-space: nowrap;
+  transform: scaleY(1.14);
+  transform-origin: left top;
+  filter: url(#fmp-rough);
+  user-select: none;
+}
+
+/* O nome vem num peso mais leve; o sobrenome e o bloco pesado. */
+.wm-first {
+  display: inline-block;
+  font-weight: 600;
+  font-size: 0.9em;
+  margin-right: 0.2em;
+}
+
+.wm-last {
+  display: inline-block;
+  font-weight: 900;
+}
+
+/* Ancora para o "boil" e para o cargo em rosa. */
+.wm-tail {
+  position: relative;
+  display: inline-block;
+}
+
+.wm-boil {
+  display: inline-block;
+  filter: url(#fmp-boil);
+}
+
+.wm-role {
+  position: absolute;
+  left: 0.38em;
+  bottom: 0.08em;
+  font-weight: 700;
+  font-size: 0.13em;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--pink);
+  transform: scaleY(0.88);
+  transform-origin: left bottom;
+  pointer-events: none;
+}
+
+/* -------------------------------------------------------------------- header */
+
+.site-head {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.6rem 2rem;
+  padding: 1.1rem clamp(1rem, 2.4vw, 2.4rem) 1.4rem;
+  pointer-events: none;
+}
+
+.site-head > * {
+  pointer-events: auto;
+}
+
+.site-nav {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: clamp(1rem, 2.6vw, 3rem);
+  padding-top: 1.2rem;
+}
+
+.site-nav a,
+.lang button {
+  color: #fff;
+  font-family: inherit;
+  font-size: clamp(0.85rem, 1.05vw, 1.05rem);
+  text-decoration: none;
+  text-shadow: 0 0.05em 0.5em rgba(0, 0, 0, 0.55);
+  transition: opacity 0.25s ease;
+}
+
+.site-nav a:hover {
+  opacity: 0.65;
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+
+.lang {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  color: #fff;
+  font-size: clamp(0.72rem, 0.9vw, 0.85rem);
+}
+
+.lang > span {
+  opacity: 0.4;
+  text-shadow: 0 0.05em 0.5em rgba(0, 0, 0, 0.55);
+}
+
+.lang button {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font-size: inherit;
+  letter-spacing: 0.06em;
+  opacity: 0.5;
+}
+
+.lang button.is-on {
+  opacity: 1;
+  color: var(--pink);
+}
+
+.lang button:hover {
+  opacity: 0.85;
+}
+
+/* ------------------------------------------- menu do "Work" (desktop) */
+
+.nav-work {
+  position: static;
+}
+
+.nav-work-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.nav-work-caret {
+  width: 0.34em;
+  height: 0.34em;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  transform: translateY(-0.15em) rotate(45deg);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+  opacity: 0.6;
+}
+
+.nav-work.is-open .nav-work-caret {
+  transform: translateY(0.05em) rotate(-135deg);
+  opacity: 1;
+}
+
+/*
+ * A caixa comeca colada no rotulo e o padding transparente empurra o cartao:
+ * e essa faixa invisivel que segura o mouse na travessia ate o painel.
+ */
+.work-menu {
+  position: absolute;
+  /* Colado na barra do menu: entre um e outro sobra so o padding transparente
+     abaixo, que e o que mantem o mouse dentro na travessia. */
+  top: 100%;
+  right: 0;
+  width: min(56rem, calc(100vw - 4rem));
+  padding-top: 1.1rem;
+}
+
+.work-menu[hidden] {
+  display: none;
+}
+
+.work-menu-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+  gap: clamp(1.2rem, 2.4vw, 2.4rem);
+  padding: clamp(1.2rem, 2vw, 1.8rem);
+  background: rgba(12, 12, 13, 0.94);
+  border: 1px solid rgba(241, 240, 236, 0.12);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.55);
+  animation: work-menu-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes work-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.9rem);
+  }
+}
+
+.work-menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.work-menu-list li {
+  animation: work-item-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  /* Escadinha curta: os dez entram em onda, nao todos de uma vez. */
+  animation-delay: calc(var(--i) * 22ms);
+}
+
+@keyframes work-item-in {
+  from {
+    opacity: 0;
+    transform: translateX(-0.6rem);
+  }
+}
+
+.work-menu-list button {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.2rem minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  appearance: none;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid rgba(241, 240, 236, 0.08);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: var(--paper);
+  transition: background 0.25s ease, padding-left 0.25s ease;
+}
+
+/* Barra na cor da marca do case, crescendo da esquerda. */
+.work-menu-list button::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.35rem;
+  bottom: 0.35rem;
+  width: 2px;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.work-menu-list button.is-active {
+  background: rgba(241, 240, 236, 0.05);
+  padding-left: 1rem;
+}
+
+.work-menu-list button.is-active::before {
+  transform: scaleY(1);
+}
+
+.work-menu-num {
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  color: var(--pink);
+}
+
+.work-menu-title {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(1.05rem, 1.3vw, 1.3rem);
+  line-height: 1.15;
+  letter-spacing: -0.005em;
+}
+
+.work-menu-client {
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.4;
+}
+
+.work-menu-preview {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.work-menu-frame {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #141416;
+}
+
+.work-menu-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: work-preview-in 0.45s ease;
+}
+
+@keyframes work-preview-in {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+}
+
+.work-menu-preview figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.work-menu-preview-client {
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.45;
+}
+
+.work-menu-preview-tag {
+  font-style: italic;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  color: var(--blue);
+}
+
+/* Sobre faixa clara o cartao continua escuro: so o rotulo inverte. */
+.site-head.ink-dark .work-menu-card {
+  color: var(--paper);
+}
+
+/* ------------------------------------------- "Work" dentro do burger */
+
+.menu-work {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid rgba(16, 16, 16, 0.14);
+}
+
+.menu-work-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  padding: 0;
+  min-height: 4.5rem;
+  appearance: none;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+  color: #101010;
+  font-size: clamp(2.6rem, 12vw, 5.2rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-align: left;
+}
+
+.menu-caret {
+  flex: none;
+  width: 0.22em;
+  height: 0.22em;
+  margin-right: 0.15em;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-0.1em) rotate(45deg);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0.35;
+}
+
+.menu-work-toggle[aria-expanded='true'] .menu-caret {
+  transform: translateY(0.05em) rotate(-135deg);
+  opacity: 0.7;
+}
+
+.menu-works {
+  list-style: none;
+  margin: 0 0 1.4rem;
+  padding: 0 0 0 0.2rem;
+  border-left: 1px solid rgba(16, 16, 16, 0.15);
+}
+
+.menu-works[hidden] {
+  display: none;
+}
+
+.menu-works li {
+  animation: work-item-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation-delay: calc(var(--i) * 28ms);
+}
+
+.menu-works button {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  width: 100%;
+  padding: 0.62rem 0 0.62rem 1rem;
+  appearance: none;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  color: #101010;
+}
+
+/*
+ * Aqui o numero nao usa a cor da marca do case: sobre o painel branco o amarelo
+ * do Mercado Livre sumia. Um cinza discreto vale para os dez.
+ */
+.menu-works-num {
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  color: rgba(16, 16, 16, 0.4);
+}
+
+/* A cor da marca entra como um tracinho, que nao precisa ser lido. */
+.menu-works button::before {
+  content: '';
+  width: 0.55rem;
+  height: 2px;
+  flex: none;
+  align-self: center;
+  background: var(--accent);
+  opacity: 0.85;
+}
+
+.menu-works-title {
+  font-family: var(--serif);
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  font-size: clamp(1.05rem, 4.4vw, 1.5rem);
+  line-height: 1.15;
+}
+
+/* Aberta a sanfona, os itens param de dividir a altura e o painel rola. */
+.menu-list.works-open > * {
+  flex: none;
+}
+
+.menu-list.works-open .menu-work-toggle {
+  min-height: 0;
+  padding: 1.1rem 0 0.9rem;
+}
+
+/*
+ * Sem o esticar, os itens ficam do tamanho do proprio texto e encostam um no
+ * outro. O respiro passa a vir do padding.
+ */
+.menu-list.works-open > a {
+  min-height: 0;
+  padding: 1.1rem 0;
+}
+
+.menu:has(.works-open) {
+  justify-content: flex-start;
+  overflow-y: auto;
+}
+
+/* Header sobre faixa clara: o menu inverte para nao sumir. */
+.site-head.ink-dark .site-nav a,
+.site-head.ink-dark .lang,
+.site-head.ink-dark .lang button {
+  color: #101010;
+  text-shadow: none;
+}
+
+.site-head.ink-dark .lang button.is-on {
+  color: var(--pink);
+}
+
+.site-head.ink-dark .burger span {
+  background: #101010;
+  box-shadow: none;
+}
+
+/* ------------------------------------------------- burger: tablet e celular */
+
+.burger {
+  position: absolute;
+  top: 1.1rem;
+  right: clamp(0.9rem, 2.4vw, 2.4rem);
+  z-index: 3;
+  display: none;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  appearance: none;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.burger span {
+  display: block;
+  width: 2.1rem;
+  height: 2px;
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+/* As duas barras viram X sobre o painel branco. */
+.site-head.menu-open .burger span {
+  background: #101010;
+  box-shadow: none;
+}
+
+.site-head.menu-open .burger span:first-child {
+  transform: translateY(5px) rotate(45deg);
+}
+
+.site-head.menu-open .burger span:last-child {
+  transform: translateY(-5px) rotate(-45deg);
+}
+
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  background: #fff;
+  color: #101010;
+  padding: clamp(6rem, 16vh, 9rem) clamp(1.6rem, 7vw, 5rem) clamp(3rem, 8vh, 5rem);
+  animation: menu-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-1.5rem);
+  }
+}
+
+.menu-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Cada item puxa uma fatia igual da altura: ficam espalhados na vertical. */
+.menu-list a {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-height: 4.5rem;
+  color: #101010;
+  text-decoration: none;
+  font-size: clamp(2.6rem, 12vw, 5.2rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  border-bottom: 1px solid rgba(16, 16, 16, 0.14);
+  transition: color 0.25s ease;
+}
+
+.menu-list a:first-child {
+  border-top: 1px solid rgba(16, 16, 16, 0.14);
+}
+
+.menu-list a:active {
+  color: var(--pink);
+}
+
+.menu-lang {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin-top: clamp(2rem, 6vh, 4rem);
+  color: #101010;
+}
+
+.menu-lang > span {
+  opacity: 0.3;
+}
+
+.menu-lang button {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+  color: #101010;
+  opacity: 0.45;
+}
+
+.menu-lang button.is-on {
+  opacity: 1;
+  color: var(--pink);
+}
+
+/* --------------------------------------------------------------- faixa/case */
+
+.band {
+  position: relative;
+  height: var(--strip);
+  min-height: 24rem;
+  overflow: hidden;
+  isolation: isolate;
+  /* Faixas fora da tela nao renderizam: 10 imagens full bleed pesam. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto var(--strip);
+  transition: height 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.band.is-hero,
+.band.is-open {
+  height: 100vh;
+}
+
+.band-media {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/*
+ * Sobra de 10% em cima e embaixo: o parallax desliza 8% da altura da faixa, e
+ * sem a sobra apareceria o vazio na ponta.
+ */
+.band-parallax {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -10%;
+  bottom: -10%;
+}
+
+.band.is-near .band-parallax {
+  will-change: transform;
+}
+
+.band-img,
+.band-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Puxa o corte pra cima: em retrato o rosto cai fora do centro. */
+  object-position: 50% 35%;
+  transform: scale(1.08);
+  filter: grayscale(1) contrast(1.15) blur(2px);
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.7s ease;
+}
+
+.band.is-open .band-img,
+.band.is-open .band-video {
+  transform: scale(1);
+  filter: none;
+}
+
+/* A cor chapada da faixa; recua quando o case abre. */
+.band-wash {
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  opacity: 0.95;
+  transition: opacity 0.7s ease;
+}
+
+.band.is-open .band-wash {
+  opacity: 0.16;
+}
+
+.band.is-hero .band-wash {
+  opacity: 0.1;
+}
+
+.band-scrim {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  /* O radial segura o titulo no centro mesmo em cima de imagem clara. */
+  background:
+    radial-gradient(ellipse 58% 42% at 50% 50%, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0) 72%),
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.5),
+      rgba(0, 0, 0, 0) 30%,
+      rgba(0, 0, 0, 0) 64%,
+      rgba(0, 0, 0, 0.58)
+    );
+  transition: opacity 0.7s ease;
+}
+
+.band.is-open .band-scrim {
+  opacity: 1;
+}
+
+/*
+ * A juncao entre duas faixas era corte seco de cor chapada. Este veu escurece
+ * so as bordas, entao o encontro vira dobra em vez de emenda.
+ */
+.band::before,
+.band::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 14vh;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.55;
+  transition: opacity 0.7s ease;
+}
+
+.band::before {
+  top: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0));
+}
+
+.band::after {
+  bottom: 0;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0));
+}
+
+.band.is-open::before,
+.band.is-open::after {
+  opacity: 0.85;
+}
+
+/*
+ * Alvo do mouse. Ancorado em offsets fixos a partir do topo da faixa, que nao
+ * se move quando ela cresce, entao ele nunca sai de baixo do cursor. E de
+ * proposito que nao existe transicao nenhuma aqui.
+ */
+.band-hit {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: var(--hit-top);
+  height: var(--hit-height);
+  width: min(56rem, 88vw);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* O conteudo tambem fica parado: so a imagem e a cor mudam. */
+.band-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.1rem;
+  padding: 0 1rem;
+  text-align: center;
+  color: var(--ink);
+  /* --enter-y: a entrada. --open-y: o recentrar quando a faixa abre. */
+  --enter-y: 2.5rem;
+  --open-y: 0px;
+  opacity: 0;
+  transform: translateY(calc(var(--enter-y) + var(--open-y)));
+  transition: color 0.5s ease, opacity 0.9s ease,
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.band.is-near .band-center {
+  --enter-y: 0px;
+  opacity: 1;
+}
+
+/*
+ * Fechada, a faixa mede --strip e o centro do alvo ja e o centro dela. Aberta,
+ * ela vira 100vh e o bloco desce ate o meio da tela. O alvo do mouse nao vai
+ * junto: ele fica onde estava, e o conteudo continua sendo filho dele, entao o
+ * mouseleave so dispara quando o cursor sai dos dois.
+ */
+.band.is-open .band-center {
+  color: #fff;
+  --open-y: var(--center-shift);
+}
+
+.band-index {
+  font-size: clamp(0.68rem, 0.85vw, 0.8rem);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.band-title {
+  margin: 0;
+  font-weight: 700;
+  font-size: clamp(2.1rem, 5.6vw, 5.2rem);
+  line-height: 0.96;
+  letter-spacing: -0.015em;
+  transition: text-shadow 0.6s ease;
+}
+
+.band.is-open .band-title,
+.band.is-hero .band-title {
+  text-shadow: 0 0.08em 0.6em rgba(0, 0, 0, 0.45);
+}
+
+.band-reveal {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease;
+}
+
+.band.is-open .band-reveal {
+  max-height: 14rem;
+  opacity: 1;
+}
+
+.band-tagline {
+  margin: 0.6rem 0 0.35rem;
+  font-style: italic;
+  font-size: clamp(0.95rem, 1.5vw, 1.35rem);
+  opacity: 0.92;
+}
+
+.band-meta {
+  margin: 0;
+  font-size: clamp(0.66rem, 0.85vw, 0.78rem);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* ---------------------------------------------------------------------- pill */
+
+.pill {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  background: var(--paper);
+  color: #101010;
+  border-radius: 999px;
+  padding: 0.9rem clamp(1.4rem, 2.4vw, 2.2rem);
+  font-family: inherit;
+  font-weight: 700;
+  font-size: clamp(0.78rem, 0.95vw, 0.95rem);
+  letter-spacing: 0.01em;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
+}
+
+.pill:hover,
+.pill:focus-visible {
+  background: #fff;
+  transform: scale(1.06);
+}
+
+/* ------------------------------------------------------------ about/contact */
+
+.panel {
+  background: var(--night);
+  padding: clamp(6rem, 20vh, 13rem) clamp(1.4rem, 6vw, 8rem) clamp(4rem, 10vh, 8rem);
+}
+
+.panel-contact {
+  padding-top: clamp(3rem, 8vh, 6rem);
+  padding-bottom: clamp(6rem, 16vh, 11rem);
+  border-top: 1px solid rgba(241, 240, 236, 0.12);
+}
+
+.panel-inner {
+  max-width: 46rem;
+}
+
+.panel-eyebrow {
+  margin: 0 0 1.4rem;
+  color: var(--pink);
+  font-size: 0.8rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.panel-body {
+  margin: 0;
+  font-size: clamp(1.15rem, 2.3vw, 2rem);
+  line-height: 1.35;
+}
+
+.panel-links {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem 2rem;
+  margin: 2.4rem 0 0;
+  padding: 0;
+}
+
+.panel-links a {
+  color: var(--blue);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(143, 195, 220, 0.35);
+  padding-bottom: 0.2rem;
+  transition: color 0.25s ease, border-color 0.25s ease;
+}
+
+.panel-links a:hover {
+  color: var(--pink);
+  border-color: var(--pink);
+}
+
+/* Sobre: texto a esquerda, retrato a direita. */
+.about-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(2.5rem, 6vw, 6rem);
+  max-width: 76rem;
+}
+
+.about-second {
+  margin: 1.6rem 0 0;
+  max-width: 34rem;
+  font-size: clamp(1rem, 1.25vw, 1.15rem);
+  line-height: 1.65;
+  opacity: 0.72;
+}
+
+.about-portrait {
+  margin: 0;
+  max-width: 26rem;
+  justify-self: end;
+}
+
+.about-portrait img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.about-portrait figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-top: 1.1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(241, 240, 236, 0.18);
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.about-portrait figcaption span:first-child {
+  color: var(--blue);
+}
+
+.about-portrait figcaption span:not(:first-child) {
+  opacity: 0.55;
+}
+
+/* ------------------------------------------------- whatsapp / formulario */
+
+.whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 2.4rem;
+  padding: 0.85rem 1.6rem;
+  border: 1px solid rgba(37, 211, 102, 0.55);
+  border-radius: 999px;
+  color: #25d366;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.whatsapp svg {
+  width: 1.25em;
+  height: 1.25em;
+  flex: none;
+}
+
+.whatsapp:hover,
+.whatsapp:focus-visible {
+  background: #25d366;
+  border-color: #25d366;
+  color: #06210f;
+}
+
+.contact-form {
+  margin-top: clamp(2.5rem, 6vh, 4rem);
+  max-width: 44rem;
+}
+
+.contact-form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.4rem;
+}
+
+.contact-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.4rem;
+}
+
+.contact-field label {
+  font-size: 0.66rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+
+.contact-field input,
+.contact-field textarea {
+  width: 100%;
+  padding: 0.85rem 0;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid rgba(241, 240, 236, 0.25);
+  border-radius: 0;
+  color: var(--paper);
+  font-family: inherit;
+  font-size: 1.05rem;
+  resize: vertical;
+  transition: border-color 0.25s ease;
+}
+
+.contact-field input::placeholder,
+.contact-field textarea::placeholder {
+  color: rgba(241, 240, 236, 0.3);
+}
+
+.contact-field input:focus,
+.contact-field textarea:focus {
+  outline: none;
+  border-bottom-color: var(--blue);
+}
+
+.contact-form-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.6rem;
+  margin-top: 0.6rem;
+}
+
+.contact-form-foot .pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.contact-form-foot .pill:disabled {
+  cursor: default;
+  opacity: 0.55;
+  transform: none;
+}
+
+.contact-form-status {
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+/* ------------------------------------------------- convite de rolagem */
+
+/*
+ * Fica sobre as faixas, entao precisa ser legivel em cima de qualquer cor: por
+ * isso a bolha escura propria, em vez de herdar a cor da faixa como o header.
+ * Abaixo do case aberto (z-index 100), que deve cobri-lo.
+ */
+.scroll-cue {
+  position: fixed;
+  right: clamp(1rem, 2.4vw, 2.4rem);
+  bottom: clamp(1rem, 2.4vw, 2.2rem);
+  z-index: 55;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0;
+  appearance: none;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+  color: #fff;
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Passado o ultimo trabalho a bolha gira e a seta passa a apontar para cima. */
+.scroll-cue.is-up .scroll-cue-dot {
+  transform: rotate(180deg);
+}
+
+.scroll-cue-label {
+  font-size: clamp(0.6rem, 0.72vw, 0.7rem);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.75;
+  text-shadow: 0 0.05em 0.5em rgba(0, 0, 0, 0.6);
+  transition: opacity 0.3s ease;
+}
+
+.scroll-cue-dot {
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(11, 11, 12, 0.45);
+  backdrop-filter: blur(8px);
+  transition: background 0.3s ease, border-color 0.3s ease,
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.scroll-cue-dot svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  /* A seta pulsa sozinha: e o que convida a rolar. */
+  animation: cue-bob 2.4s ease-in-out infinite;
+}
+
+@keyframes cue-bob {
+  0%,
+  100% {
+    transform: translateY(-0.14rem);
+  }
+  50% {
+    transform: translateY(0.14rem);
+  }
+}
+
+.scroll-cue:hover .scroll-cue-label,
+.scroll-cue:focus-visible .scroll-cue-label {
+  opacity: 1;
+}
+
+.scroll-cue:hover .scroll-cue-dot,
+.scroll-cue:focus-visible .scroll-cue-dot {
+  background: var(--paper);
+  border-color: var(--paper);
+  color: #101010;
+  transform: translateY(2px);
+}
+
+.scroll-cue.is-up:hover .scroll-cue-dot,
+.scroll-cue.is-up:focus-visible .scroll-cue-dot {
+  transform: rotate(180deg) translateY(2px);
+}
+
+/* ------------------------------------------------------------------ rodape */
+
+.site-foot {
+  padding: 2.2rem 1.5rem 2.6rem;
+  border-top: 1px solid rgba(241, 240, 236, 0.1);
+  text-align: center;
+}
+
+.site-foot p {
+  margin: 0;
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.45;
+}
+
+/* ============================================================ pagina do case */
+
+/*
+ * Pagina interna em duas colunas. A da esquerda para no lugar com a ficha do
+ * projeto; so a da direita rola, com a capa, o filme e as pecas. Quem rola e a
+ * `.case-scroll`, nao a janela — por isso o sticky da coluna gruda no topo
+ * dela, e `align-items: start` no grid e obrigatorio: no `stretch` padrao a
+ * coluna teria a altura da linha inteira e nao teria para onde grudar.
+ */
+.case {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  width: 100vw;
+  height: 100dvh;
+  background: var(--night);
+  animation: case-in 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes case-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.case-scroll {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.case-split {
+  display: grid;
+  grid-template-columns: minmax(15rem, 23vw) minmax(0, 1fr);
+  align-items: start;
+  min-height: 100%;
+}
+
+.case-close {
+  position: absolute;
+  top: 1.1rem;
+  right: clamp(1rem, 3vw, 2.4rem);
+  z-index: 3;
+  appearance: none;
+  border: 1px solid var(--rule);
+  background: rgba(11, 11, 12, 0.72);
+  color: var(--paper);
+  border-radius: 999px;
+  padding: 0.55rem 1.3rem;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.case-close:hover {
+  background: var(--paper);
+  border-color: var(--paper);
+  color: #101010;
+}
+
+/* ------------------------------------------------------------ coluna fixa */
+
+.case-left {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100dvh;
+  padding: clamp(1.4rem, 3vw, 2.2rem) clamp(1.2rem, 2vw, 2rem) 1.6rem
+    clamp(1.2rem, 3vw, 2.6rem);
+  border-right: 1px solid var(--rule);
+  /* Ficha grande em tela baixa rola por dentro da coluna em vez de ser
+     cortada. A barra some porque nao e parte do desenho. */
+  overflow: hidden auto;
+  scrollbar-width: none;
+}
+
+.case-left::-webkit-scrollbar {
+  display: none;
+}
+
+.case-back {
+  appearance: none;
+  padding: 0 0 2px;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  background: none;
+  color: var(--paper);
+  cursor: pointer;
+  transition: border-color 0.3s ease, color 0.3s ease;
+}
+
+.case-back:hover {
+  border-bottom-color: currentColor;
+  color: var(--blue);
+}
+
+.case-index {
+  margin: clamp(1.8rem, 4vh, 2.8rem) 0 0;
+  color: var(--pink);
+}
+
+.case-title {
+  margin: 0.7rem 0 1.1rem;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(1.9rem, 2.7vw, 3rem);
+  line-height: 1.02;
+  letter-spacing: -0.018em;
+}
+
+.case-kicker {
+  margin: 0;
+  line-height: 1.75;
+  color: var(--muted);
+}
+
+.case-facts {
+  display: grid;
+  gap: 0.75rem;
+  width: 100%;
+  margin: clamp(1.4rem, 3vh, 2rem) 0 0;
+  padding-top: 1.2rem;
+  border-top: 1px dashed var(--rule);
+  font-size: 0.57rem;
+}
+
+.case-facts > div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.case-facts dt {
+  color: var(--muted);
+}
+
+.case-facts dd {
+  margin: 0;
+  line-height: 1.5;
+  color: var(--blue);
+}
+
+/* -------------------------------------------------------- coluna das pecas */
+
+.case-right {
+  min-width: 0;
+  /* A folga a esquerda e o respiro do filete que separa as duas colunas: sem
+     ela a capa e todo o texto nascem colados na divisa. */
+  padding: clamp(1.4rem, 3vw, 2.2rem) clamp(1.2rem, 3.4vw, 3rem)
+    clamp(5rem, 12vh, 8rem) clamp(1.4rem, 2.6vw, 2.8rem);
+}
+
+.case-cover {
+  margin: 0;
+  overflow: hidden;
+  background: #141416;
+}
+
+.case-cover img {
+  width: 100%;
+  height: min(70vh, 40rem);
+  object-fit: cover;
+}
+
+.case-tagline {
+  max-width: 22ch;
+  margin: 0;
+  padding: clamp(2.4rem, 6vw, 5rem) 0 clamp(1.8rem, 4vw, 3.4rem);
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(1.7rem, 3.4vw, 3.4rem);
+  line-height: 1.06;
+  letter-spacing: -0.018em;
+}
+
+.piece {
+  margin-bottom: clamp(2.4rem, 5vw, 5rem);
+}
+
+.piece-eyebrow {
+  margin: 0 0 1rem;
+  color: var(--muted);
+}
+
+/* O bloco de texto abre em duas colunas: o nome do cliente segura a esquerda e
+   o corpo corre ao lado, recuado. */
+.piece-text {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(1.2rem, 3vw, 3.4rem);
+  align-items: start;
+}
+
+.piece-title {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(1.5rem, 2.6vw, 2.6rem);
+  line-height: 1.04;
+  letter-spacing: -0.012em;
+}
+
+.piece-body {
+  display: grid;
+  gap: 1.1em;
+  max-width: 62ch;
+  font-family: var(--serif);
+  font-size: clamp(1rem, 1.15vw, 1.2rem);
+  line-height: 1.58;
+  color: rgba(241, 240, 236, 0.82);
+}
+
+.piece-body p {
+  margin: 0;
+}
+
+/* ------------------------------------------------------------------ pecas */
+
+/* Seis colunas para caber a peca inteira (6), a metade (3) e as trincas de
+   social (2). */
+.case-gallery {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-items: start;
+  gap: clamp(0.9rem, 1.8vw, 1.8rem);
+}
+
+.case-gallery figure {
+  grid-column: span 6;
+  margin: 0;
+}
+
+.case-gallery img {
+  width: 100%;
+  height: auto;
+  background: #141416;
+}
+
+.case-gallery .is-half {
+  grid-column: span 3;
+}
+
+.case-gallery .is-third {
+  grid-column: span 2;
+}
+
+/* Peca sozinha na linha: o limite e a ALTURA, nao a largura, para que ela
+   caiba inteira na tela sem obrigar a rolar. */
+.case-gallery .is-full img {
+  width: auto;
+  max-width: 100%;
+  max-height: min(78vh, 46rem);
+  margin-inline: auto;
+}
+
+.caption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+  margin: 0.6rem 0 0;
+  color: var(--muted);
+  font-size: 0.56rem;
+  line-height: 1.6;
+}
+
+.caption a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+}
+
+/*
+ * Big Mac tem corte horizontal e vertical da mesma peca. Cada uma so aparece
+ * na largura para a qual foi cortada: as verticais ficam no celular e no iPad.
+ */
+.vp-compact {
+  display: none;
+}
+
+@media (max-width: 1100px) {
+  .vp-desktop {
+    display: none;
+  }
+
+  .vp-compact {
+    display: block;
+  }
+}
+
+/* ------------------------------------------------------------------ filme */
+
+/* Fachada do player: o iframe do Vimeo (ou o arquivo) so entra no DOM depois
+   do clique, para o case nao carregar o filme inteiro antes da hora. */
+.film-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #000;
+}
+
+.film-frame iframe,
+.film-frame video,
+.film-poster img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: cover;
+}
+
+.film-poster {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  appearance: none;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.film-poster img {
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.film-poster:hover img {
+  transform: scale(1.03);
+}
+
+.film-play {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 4.4rem;
+  height: 4.4rem;
+  padding-left: 0.25rem;
+  border-radius: 50%;
+  background: var(--paper);
+  color: #101010;
+  font-size: 1.15rem;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.film-poster:hover .film-play {
+  background: var(--pink);
+  color: var(--paper);
+}
+
+.film-label {
+  position: absolute;
+  bottom: 1.1rem;
+  color: var(--paper);
+}
+
+.film-caption {
+  justify-content: space-between;
+}
+
+/* --------------------------------------------------------------- proximo */
+
+.piece--next {
+  margin-bottom: 0;
+  padding-top: clamp(2rem, 4vw, 3.4rem);
+  border-top: 1px dashed var(--rule);
+}
+
+.next-link {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  width: 100%;
+  padding: 0;
+  appearance: none;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.next-title {
+  font-family: var(--display);
+  font-size: clamp(2rem, 4.4vw, 4.4rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  transition: color 0.3s ease;
+}
+
+.next-link:hover .next-title {
+  font-style: italic;
+  color: var(--blue);
+}
+
+.next-link > span[aria-hidden] {
+  font-size: clamp(1.1rem, 2vw, 1.8rem);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.next-link:hover > span[aria-hidden] {
+  transform: translateX(0.4rem);
+}
+
+.next-meta {
+  margin: 0.9rem 0 0;
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------- case: mobile */
+
+/*
+ * Uma coluna so: a da esquerda vira um cabecalho normal e para de grudar —
+ * numa tela dessa altura o sticky comeria metade do espaco de leitura.
+ * `align-content: start` impede que o `min-height` do container seja repartido
+ * entre as duas linhas.
+ */
+@media (max-width: 1000px) {
+  .case-split {
+    grid-template-columns: 1fr;
+    align-content: start;
+  }
+
+  .case-left {
+    position: static;
+    height: auto;
+    overflow: visible;
+    border-right: 0;
+    border-bottom: 1px dashed var(--rule);
+    /* O topo abre espaco para o botao de fechar, que fica por cima. */
+    padding: clamp(3.4rem, 9vh, 4.6rem) clamp(1.2rem, 4vw, 2rem) 1.8rem;
+  }
+
+  .case-index {
+    margin-top: 1.4rem;
+  }
+
+  .case-right {
+    padding: 0 clamp(1.2rem, 4vw, 2rem) clamp(4rem, 10vh, 6rem);
+  }
+
+  .case-cover img {
+    height: 46vh;
+  }
+
+  .piece-text {
+    grid-template-columns: 1fr;
+  }
+
+  .case-gallery {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .case-gallery figure,
+  .case-gallery .is-half,
+  .case-gallery .is-third,
+  .case-gallery .is-full {
+    grid-column: 1 / -1;
+  }
+
+  .case-gallery .is-full img {
+    max-height: min(70vh, 34rem);
+  }
+}
+
+/* --------------------------------------------------------------- responsivo */
+
+/* Notebook estreito: a assinatura e o menu param de caber lado a lado. */
+/* Tablet e celular: assinatura centralizada e o menu vira burger. */
+@media (max-width: 1100px) {
+  .site-head {
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    padding-left: 4rem;
+    padding-right: 4rem;
+  }
+
+  .wordmark {
+    position: relative;
+    z-index: 3;
+    font-size: clamp(1.7rem, 7vw, 3.6rem);
+    transform-origin: center top;
+  }
+
+  .site-nav,
+  .work-menu {
+    display: none;
+  }
+
+  .burger {
+    display: flex;
+  }
+
+  .menu:not([hidden]) {
+    display: flex;
+  }
+}
+
+@media (max-width: 900px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: clamp(2.5rem, 8vw, 4rem);
+  }
+
+  .about-portrait {
+    justify-self: start;
+    max-width: 20rem;
+  }
+}
+
+@media (max-width: 620px) {
+  .scroll-cue-label {
+    display: none;
+  }
+
+  .scroll-cue-dot {
+    width: 2.9rem;
+    height: 2.9rem;
+  }
+
+  .contact-form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+@media (max-width: 720px) {
+  :root {
+    --strip: 62vh;
+    --hit-top: 6vh;
+    --hit-height: 50vh;
+  }
+
+  .band {
+    min-height: 20rem;
+  }
+}
+
+/*
+ * Touch nao tem hover: as faixas ja nascem legiveis, com a imagem no lugar da
+ * cor chapada e a ficha do case visivel.
+ */
+@media (hover: none), (pointer: coarse) {
+  .band .band-img,
+  .band .band-video {
+    filter: none;
+    transform: none;
+  }
+
+  .band:not(.is-hero) .band-wash {
+    opacity: 0.34;
+  }
+
+  .band .band-scrim {
+    opacity: 1;
+  }
+
+  .band .band-reveal {
+    max-height: 16rem;
+    opacity: 1;
+  }
+
+  .band .band-center {
+    color: #fff;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .wm-boil {
+    filter: url(#fmp-rough);
+  }
+
+  .band-parallax {
+    transform: none !important;
+  }
+
+  .scroll-cue-dot svg {
+    animation: none;
+  }
+
+  .band-center {
+    --enter-y: 0px;
+    opacity: 1;
+  }
+
+  [data-reveal],
+  [data-reveal].is-in {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .band,
+  .band-img,
+  .band-video,
+  .band-wash,
+  .band-scrim,
+  .band-reveal,
+  .band-center,
+  .pill,
+  .case {
+    transition-duration: 0.01ms;
+    animation-duration: 0.01ms;
+  }
+}
+
+/* ==========================================================================
+   Painel de analytics (/admin). Tela interna, nao divide nada com o portfolio.
+   ========================================================================== */
+
+.admin {
+  min-height: 100dvh;
+  padding: clamp(1.4rem, 4vw, 3rem);
+  background: var(--night);
+  color: var(--paper);
+}
+
+.admin-eyebrow {
+  margin: 0;
+  color: var(--pink);
+  font-size: 0.66rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.admin-empty {
+  margin: 1.4rem 0;
+  font-size: 0.9rem;
+  opacity: 0.5;
+}
+
+.admin-error {
+  margin: 0.8rem 0 0;
+  color: var(--pink);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.admin-error-page {
+  margin: 1.4rem 0;
+}
+
+/* ------------------------------------------------------------------- login */
+
+.admin-login-screen {
+  display: grid;
+  place-items: center;
+}
+
+.admin-login {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  width: min(22rem, 90vw);
+}
+
+.admin-login h1 {
+  margin: 0 0 0.8rem;
+  font-size: clamp(2.2rem, 5vw, 3rem);
+  line-height: 1;
+}
+
+.admin-login label {
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  opacity: 0.55;
+}
+
+.admin-login input {
+  padding: 0.8rem 0;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid rgba(241, 240, 236, 0.28);
+  color: var(--paper);
+  font-family: inherit;
+  font-size: 1.05rem;
+}
+
+.admin-login input:focus {
+  outline: none;
+  border-bottom-color: var(--blue);
+}
+
+.admin-login .pill {
+  margin-top: 0.6rem;
+  align-self: flex-start;
+}
+
+.admin-back {
+  margin-top: 1.4rem;
+  color: var(--blue);
+  font-size: 0.8rem;
+  text-decoration: none;
+}
+
+.admin-back:hover {
+  color: var(--pink);
+}
+
+/* --------------------------------------------------------------- cabecalho */
+
+.admin-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.4rem;
+  border-bottom: 1px solid rgba(241, 240, 236, 0.14);
+}
+
+.admin-home {
+  font-family: "Big Shoulders Display", "Arial Narrow", sans-serif;
+  font-weight: 900;
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
+  color: var(--blue);
+  text-decoration: none;
+}
+
+.admin-logout {
+  appearance: none;
+  background: none;
+  border: 1px solid rgba(241, 240, 236, 0.3);
+  border-radius: 999px;
+  padding: 0.5rem 1.1rem;
+  color: var(--paper);
+  font-family: inherit;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.admin-logout:hover {
+  background: var(--paper);
+  color: #101010;
+}
+
+/* ------------------------------------------------------------------ filtro */
+
+.admin-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem 1.6rem;
+  margin: 1.6rem 0 2rem;
+}
+
+.admin-range {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.admin-range button {
+  appearance: none;
+  background: none;
+  border: 1px solid rgba(241, 240, 236, 0.18);
+  border-radius: 999px;
+  padding: 0.45rem 0.95rem;
+  color: var(--paper);
+  font-family: inherit;
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.admin-range button:hover {
+  opacity: 1;
+}
+
+.admin-range button.is-active {
+  opacity: 1;
+  background: rgba(143, 195, 220, 0.14);
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+/* Recarregando: o painel antigo apaga um pouco, sem sumir. */
+.admin-body.is-loading {
+  opacity: 0.45;
+  transition: opacity 0.2s ease;
+}
+
+/* ------------------------------------------------------------------- cards */
+
+.admin-card {
+  margin-bottom: 1.2rem;
+  padding: clamp(1rem, 2vw, 1.5rem);
+  background: rgba(241, 240, 236, 0.03);
+  border: 1px solid rgba(241, 240, 236, 0.1);
+}
+
+.admin-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.admin-card-note {
+  margin: 0.4rem 0 0;
+  font-size: 0.75rem;
+  opacity: 0.5;
+}
+
+.admin-toggle {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--blue);
+  font-family: inherit;
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.admin-toggle:hover {
+  color: var(--pink);
+}
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 1px;
+  margin-bottom: 1.2rem;
+  background: rgba(241, 240, 236, 0.1);
+  border: 1px solid rgba(241, 240, 236, 0.1);
+}
+
+.admin-stat {
+  padding: 1.1rem;
+  background: var(--night);
+}
+
+.admin-stat-label {
+  margin: 0;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  opacity: 0.5;
+}
+
+.admin-stat-value {
+  margin: 0.4rem 0 0;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  line-height: 1;
+}
+
+.admin-stat-note {
+  margin: 0.35rem 0 0;
+  font-size: 0.66rem;
+  opacity: 0.42;
+}
+
+/* ----------------------------------------------------------------- grafico */
+
+.admin-chart {
+  position: relative;
+}
+
+.admin-chart-grid {
+  position: absolute;
+  inset: 0 0 1.6rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.admin-chart-grid span {
+  height: 1px;
+  background: rgba(241, 240, 236, 0.07);
+}
+
+.admin-chart-plot {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 11rem;
+}
+
+.admin-bar {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.admin-bar-fill {
+  width: 100%;
+  background: var(--blue);
+  opacity: 0.55;
+  transition: opacity 0.2s ease;
+}
+
+.admin-bar:hover .admin-bar-fill,
+.admin-bar.is-active .admin-bar-fill {
+  opacity: 1;
+}
+
+.admin-bar-peak {
+  position: absolute;
+  top: -1.1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.6rem;
+  opacity: 0.5;
+  white-space: nowrap;
+}
+
+.admin-tip {
+  position: absolute;
+  bottom: calc(100% + 0.4rem);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  padding: 0.5rem 0.7rem;
+  background: var(--paper);
+  color: #101010;
+  font-size: 0.66rem;
+  line-height: 1.45;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.admin-tip strong {
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
+.admin-chart-axis {
+  display: flex;
+  gap: 2px;
+  margin-top: 0.5rem;
+  height: 1.1rem;
+}
+
+.admin-chart-axis span {
+  flex: 1;
+  font-size: 0.55rem;
+  letter-spacing: 0.06em;
+  text-align: center;
+  opacity: 0.4;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- rankings */
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: 1.2rem;
+  margin-bottom: 1.2rem;
+}
+
+.admin-grid .admin-card {
+  margin-bottom: 0;
+}
+
+.admin-rank {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-rank li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 4.5rem 2.6rem;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.42rem 0;
+  font-size: 0.8rem;
+}
+
+.admin-rank-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-rank-track {
+  height: 3px;
+  background: rgba(241, 240, 236, 0.1);
+}
+
+.admin-rank-fill {
+  display: block;
+  height: 100%;
+  background: var(--blue);
+  opacity: 0.7;
+}
+
+.admin-rank-value {
+  text-align: right;
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+/* ----------------------------------------------------------------- tabelas */
+
+.admin-scroll {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.76rem;
+}
+
+.admin-table th {
+  padding: 0.5rem 0.7rem 0.5rem 0;
+  border-bottom: 1px solid rgba(241, 240, 236, 0.16);
+  text-align: left;
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  font-weight: 400;
+  opacity: 0.5;
+  white-space: nowrap;
+}
+
+.admin-table td {
+  padding: 0.5rem 0.7rem 0.5rem 0;
+  border-bottom: 1px solid rgba(241, 240, 236, 0.07);
+  white-space: nowrap;
+}
+
+.admin-table .is-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

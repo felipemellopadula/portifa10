@@ -1,0 +1,7 @@
+# URLs limpas (/work/slug): tudo que nao for arquivo existente cai no index.html
+# e quem resolve a rota e o React. Sem isso o Apache devolve 404 nesses links.
+Options -MultiViews
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [QSA,L]
