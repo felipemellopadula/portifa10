@@ -18,6 +18,8 @@ export type Film = {
 
 export type Shot = {
   image: string
+  /** Corte vertical da mesma peca: troca a `image` no celular e no iPad. */
+  imageCompact?: string
   alt: string
   caption?: L
   span?: 'wide' | 'half' | 'third'
@@ -29,6 +31,13 @@ export type CaseDetail = {
   credits: Credit[]
   film?: Film
   shots: Shot[]
+  /**
+   * Em vez de galeria no fim, cada peca entra depois de um bloco de texto
+   * (problema, insight, ideia, PR), na ordem. As que sobram fecham a pagina.
+   */
+  interleave?: boolean
+  /** Passo a passo em trinca, logo depois do ultimo bloco de texto e sua peca. */
+  howItWorks?: Shot[]
 }
 
 export const caseDetails: Record<string, CaseDetail> = {
@@ -100,6 +109,74 @@ export const caseDetails: Record<string, CaseDetail> = {
         alt: "Billboard on a downtown corner in front of a stalled tower, with an endless loading bar: Plenty of time to watch Clash of Clans on Netflix.",
         caption: { en: "“PLENTY OF TIME TO WATCH CLASH OF CLANS ON NETFLIX.” / DOWNTOWN PLACEMENT", pt: "“TEMPO DE SOBRA PARA ASSISTIR CLASH OF CLANS NA NETFLIX.” / PONTO NO CENTRO" },
         span: "wide",
+      },
+    ],
+  },
+  "the-miracle-store": {
+    credits: [
+      [{ en: "CLIENT", pt: "CLIENTE" }, { en: "CIF", pt: "CIF" }],
+      [{ en: "AGENCY", pt: "AGÊNCIA" }, { en: "MIAMI AD SCHOOL BRAZIL", pt: "MIAMI AD SCHOOL BRASIL" }],
+      [{ en: "BRIEF", pt: "BRIEFING" }, { en: "51ST CLUBE DE CRIAÇÃO DE SÃO PAULO FESTIVAL", pt: "51º FESTIVAL DO CLUBE DE CRIAÇÃO DE SÃO PAULO" }],
+      [{ en: "SCOPE", pt: "ESCOPO" }, { en: "BRAND ACTIVATION", pt: "ATIVAÇÃO DE MARCA" }],
+      [{ en: "EVENT", pt: "EVENTO" }, { en: "ROCK IN RIO", pt: "ROCK IN RIO" }],
+      [{ en: "YEAR", pt: "ANO" }, { en: "2026", pt: "2026" }],
+      [{ en: "CREATIVE DIRECTOR", pt: "DIREÇÃO CRIATIVA" }, { en: "FILIPE SANCHES", pt: "FILIPE SANCHES" }],
+      [{ en: "ROLE", pt: "FUNÇÃO" }, { en: "CONCEPT / ART DIRECTION", pt: "CONCEITO / DIREÇÃO DE ARTE" }],
+    ],
+    interleave: true,
+    howItWorks: [
+      {
+        image: "/images/cases/miracle-step-01.webp",
+        alt: "A pair of white sneakers caked in mud after the festival",
+        caption: { en: "01 / THE SNEAKERS ARRIVE DIRTY FROM THE FESTIVAL", pt: "01 / OS TÊNIS CHEGAM SUJOS DO FESTIVAL" },
+        span: "third",
+      },
+      {
+        image: "/images/cases/miracle-step-02.webp",
+        alt: "A woman scrubbing a muddy sneaker next to a bottle of Cif",
+        caption: { en: "02 / THE CIF CLEAN HAPPENS", pt: "02 / A LIMPEZA COM CIF ACONTECE" },
+        span: "third",
+      },
+      {
+        image: "/images/cases/miracle-step-03.webp",
+        alt: "The cleaned white sneaker on display in the store, priced at R$20",
+        caption: { en: "03 / THEY GO ON DISPLAY IN THE STORE", pt: "03 / SÃO COLOCADOS COMO AMOSTRA NA LOJA" },
+        span: "third",
+      },
+    ],
+    shots: [
+      {
+        image: "/images/cases/miracle-01.webp",
+        imageCompact: "/images/cases/miracle-01-compact.webp",
+        alt: "A clean white sneaker on a display plinth in a sneaker store, priced at R$20",
+        caption: { en: "THE STORE / USED SNEAKERS AT MIRACLE PRICES", pt: "A LOJA / TÊNIS USADOS A PREÇOS MILAGROSOS" },
+      },
+      {
+        image: "/images/cases/miracle-02.webp",
+        imageCompact: "/images/cases/miracle-02-compact.webp",
+        alt: "A customer smiling as he looks over a white sneaker with a Cif tag",
+        caption: { en: "THE CUSTOMER / NOBODY SUSPECTS A THING", pt: "O CLIENTE / NINGUÉM DESCONFIA" },
+      },
+      {
+        image: "/images/cases/miracle-03.webp",
+        imageCompact: "/images/cases/miracle-03-compact.webp",
+        alt: "A sales assistant hands a surprised customer a Cif card while he holds a white sneaker",
+        caption: { en: "THE REVEAL / THE PRICE ON THE TAG IS THE PRICE OF A CIF", pt: "A REVELAÇÃO / O PREÇO DA ETIQUETA É O PREÇO DE UM CIF" },
+      },
+      {
+        image: "/images/cases/miracle-mion.webp",
+        alt: "Marcos Mion smiling and holding up a bottle of Cif Cremoso",
+        caption: { en: "PR / MARCOS MION, SNEAKERHEAD AND SPOKESPERSON", pt: "PR / MARCOS MION, SNEAKERHEAD E PORTA-VOZ" },
+      },
+      {
+        image: "/images/cases/miracle-reacts.webp",
+        alt: "Three YouTube thumbnails of creators reacting to the sneakers: I bought an Air Jordan for R$20; if they sold me this as new, I would buy it; this sneaker is used, what?",
+        caption: { en: "INFLUENCER REACTIONS ON SOCIAL MEDIA / “I BOUGHT AN AIR JORDAN FOR R$20!!” / “IF THEY SOLD ME THESE SNEAKERS AS NEW, I’D BUY THEM.” / “THESE SNEAKERS ARE USED.” “WHAT??!!!”", pt: "REAÇÕES DOS INFLUENCERS NAS REDES SOCIAIS / “COMPREI UM AIR JORDAN POR R$20!!” / “SE ME VENDESSEM ESSE TÊNIS COMO NOVO, EU COMPRARIA.” / “ESSE TÊNIS É USADO.” “QUÊ??!!!”" },
+      },
+      {
+        image: "/images/cases/miracle-festival.webp",
+        alt: "Friends in front of the Rock in Rio main stage, cheering and holding up their clean sneakers",
+        caption: { en: "ROCK IN RIO / NEW SNEAKERS, AGAIN", pt: "ROCK IN RIO / TÊNIS NOVO, DE NOVO" },
       },
     ],
   },
@@ -299,7 +376,6 @@ export const caseDetails: Record<string, CaseDetail> = {
       [{ en: "YEAR", pt: "ANO" }, { en: "2025", pt: "2025" }],
       [{ en: "CREATIVE DIRECTOR", pt: "DIREÇÃO CRIATIVA" }, { en: "GABRIEL SILVA", pt: "GABRIEL SILVA" }],
       [{ en: "ROLE", pt: "FUNÇÃO" }, { en: "CONCEPT / ART DIRECTION", pt: "CONCEITO / DIREÇÃO DE ARTE" }],
-      [{ en: "EDITION", pt: "EDIÇÃO" }, { en: "100 NUMBERED PIECES", pt: "100 PEÇAS NUMERADAS" }],
     ],
     shots: [
       {
@@ -493,36 +569,6 @@ export const caseDetails: Record<string, CaseDetail> = {
         image: "/images/opt/sos7.webp",
         alt: "Phone in hand showing the plastic SOS post on the Yourban2030 feed",
         caption: { en: "SOCIAL / THE SIGNAL CLOSES WHERE PEOPLE LIVE", pt: "SOCIAL / O SINAL FECHA ONDE AS PESSOAS VIVEM" },
-        span: "wide",
-      },
-    ],
-  },
-  "sound-you-can-see": {
-    credits: [
-      [{ en: "CLIENT", pt: "CLIENTE" }, { en: "SKOL BEATS", pt: "SKOL BEATS" }],
-      [{ en: "AGENCY", pt: "AGÊNCIA" }, { en: "PERSONAL PROJECT", pt: "PROJETO PESSOAL" }],
-      [{ en: "SCOPE", pt: "ESCOPO" }, { en: "OOH + PRINT", pt: "OOH + IMPRESSO" }],
-      [{ en: "YEAR", pt: "ANO" }, { en: "2025", pt: "2025" }],
-      [{ en: "ROLE", pt: "FUNÇÃO" }, { en: "ART DIRECTION", pt: "DIREÇÃO DE ARTE" }],
-      [{ en: "MEDIA", pt: "MÍDIA" }, { en: "OOH", pt: "OOH" }],
-    ],
-    shots: [
-      {
-        image: "/images/opt/skol5.webp",
-        alt: "Giant Skol Beats panel lit in neon at a festival, the crowd and the stage behind it",
-        caption: { en: "OOH / THE PANEL LIT LIKE THE STAGE", pt: "OOH / O PAINEL ACESO COMO O PALCO" },
-        span: "wide",
-      },
-      {
-        image: "/images/beats_vert.webp",
-        alt: "Vertical Skol Beats print piece using the pulse as layout",
-        caption: { en: "PRINT / THE PULSE AS LAYOUT", pt: "IMPRESSO / O PULSO COMO LAYOUT" },
-        span: "wide",
-      },
-      {
-        image: "/images/beats6.webp",
-        alt: "Skol Beats out of home panel closing the campaign",
-        caption: { en: "OOH / THE BRAND AS PART OF THE SHOW", pt: "OOH / A MARCA COMO PARTE DO SHOW" },
         span: "wide",
       },
     ],

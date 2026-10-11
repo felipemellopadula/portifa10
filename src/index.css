@@ -1413,7 +1413,8 @@ video {
   background: #141416;
 }
 
-.case-cover img {
+.case-cover img,
+.case-cover video {
   width: 100%;
   height: min(70vh, 40rem);
   object-fit: cover;
@@ -1439,13 +1440,22 @@ video {
   color: var(--muted);
 }
 
-/* O bloco de texto abre em duas colunas: o nome do cliente segura a esquerda e
-   o corpo corre ao lado, recuado. */
-.piece-text {
+/* O bloco de texto abre em duas colunas de mesmo peso: o insight na esquerda,
+   a ideia na direita. */
+.piece-columns {
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-  gap: clamp(1.2rem, 3vw, 3.4rem);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.6rem, 3.4vw, 3.6rem);
   align-items: start;
+  margin-top: clamp(1.4rem, 3vw, 2.4rem);
+}
+
+.piece-column .piece-eyebrow {
+  margin-bottom: 0.9rem;
+}
+
+.piece-column .piece-body {
+  max-width: 46ch;
 }
 
 .piece-title {
@@ -1471,6 +1481,23 @@ video {
   margin: 0;
 }
 
+/* Case intercalado: cada bloco abre com o rotulo na esquerda e o texto
+   recuado na direita, e a peca vem logo embaixo. */
+.piece-title--story {
+  margin-bottom: clamp(1.4rem, 3vw, 2.4rem);
+}
+
+.piece--chapter {
+  display: grid;
+  grid-template-columns: minmax(0, 0.5fr) minmax(0, 1.5fr);
+  gap: clamp(1.2rem, 3vw, 3.4rem);
+  align-items: start;
+}
+
+.piece--chapter .piece-eyebrow {
+  margin: 0.35rem 0 0;
+}
+
 /* ------------------------------------------------------------------ pecas */
 
 /* Seis colunas para caber a peca inteira (6), a metade (3) e as trincas de
@@ -1485,6 +1512,10 @@ video {
 .case-gallery figure {
   grid-column: span 6;
   margin: 0;
+}
+
+.case-gallery picture {
+  display: block;
 }
 
 .case-gallery img {
@@ -1698,12 +1729,23 @@ video {
     padding: 0 clamp(1.2rem, 4vw, 2rem) clamp(4rem, 10vh, 6rem);
   }
 
-  .case-cover img {
+  .case-cover img,
+  .case-cover video {
     height: 46vh;
   }
 
-  .piece-text {
+  .piece--chapter {
     grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .piece--chapter .piece-eyebrow {
+    margin: 0 0 0.9rem;
+  }
+
+  .piece-columns {
+    grid-template-columns: 1fr;
+    gap: clamp(1.8rem, 6vw, 2.6rem);
   }
 
   .case-gallery {

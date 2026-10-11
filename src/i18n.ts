@@ -89,7 +89,11 @@ export const ui = {
   backToWork: { en: 'Back to Work', pt: 'Voltar aos Trabalhos' },
   seeAllWork: { en: 'See all work', pt: 'Ver todos os trabalhos' },
 
+  caseProblem: { en: 'The problem', pt: 'O problema' },
+  caseInsight: { en: 'The insight', pt: 'O insight' },
   caseIdea: { en: 'The idea', pt: 'A ideia' },
+  casePR: { en: 'PR', pt: 'PR' },
+  caseHowItWorks: { en: 'How it works', pt: 'Como funciona' },
   caseCredits: { en: 'Credits', pt: 'Ficha técnica' },
   caseWork: { en: 'The work', pt: 'As peças' },
   caseNext: { en: 'Next project', pt: 'Próximo projeto' },
